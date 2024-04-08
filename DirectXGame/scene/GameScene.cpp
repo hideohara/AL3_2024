@@ -62,6 +62,16 @@ void GameScene::Update() {
 	// デバッグカメラの更新
 	debugCamera_->Update();
 
+	// 平行移動テスト
+	worldTransform_.translation_.x += 0.1f;
+	Matrix4x4 result{ 1.0f, 0.0f, 0.0f, 0.0f, 
+					  0.0f, 1.0f, 0.0f, 0.0f,
+					  0.0f, 0.0f, 1.0f, 0.0f, 
+		worldTransform_.translation_.x,
+		worldTransform_.translation_.y, 
+		worldTransform_.translation_.z, 1.0f };
+	worldTransform_.matWorld_ = result;
+	worldTransform_.TransferMatrix();
 }
 
 void GameScene::Draw() {
