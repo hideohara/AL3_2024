@@ -75,6 +75,17 @@ void GameScene::Update() {
 	for (WorldTransform* worldTransformBlock :
 		worldTransformBlocks_) {
 
+
+		//Matrix4x4 result{ 
+		//	1.0f, 0.0f, 0.0f, 0.0f, 
+		//	0.0f, 1.0f, 0.0f, 0.0f,
+		//	0.0f, 0.0f, 1.0f, 0.0f, 
+		//	worldTransformBlock->translation_.x, 
+		//	worldTransformBlock->translation_.y, 
+		//	worldTransformBlock->translation_.z, 
+		//	1.0f };
+
+
 		//スケーリング行列の作成
 
 		//	X軸周り回転行列の作成
@@ -84,11 +95,20 @@ void GameScene::Update() {
 
 		//	平行移動行列の作成
 
-		//	worldTransformBlock->matWorld_ =
+		//worldTransformBlock->matWorld_ = result;
+		//worldTransformBlock->matWorld_ = MakeTranslateMatrix(worldTransformBlock->translation_);
 		//	スケーリング行列 * 回転行列 * 平行移動行列;
+		
+		//worldTransformBlock->matWorld_ = MakeAffineMatrix(
+		//		worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
+				//worldTransformBlock->translation_);
+
+		//worldTransformBlock->
 
 		// 定数バッファに転送する
-		worldTransformBlock->TransferMatrix();
+		//worldTransformBlock->TransferMatrix();
+
+		worldTransformBlock->UpdateMatrix();
 	}
 
 

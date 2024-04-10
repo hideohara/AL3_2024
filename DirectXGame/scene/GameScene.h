@@ -9,7 +9,7 @@
 #include "WorldTransform.h"
 #include "Player.h"
 #include <vector>
-
+#include "MathUtilityForText.h"
 
 /// <summary>
 /// ゲームシーン
