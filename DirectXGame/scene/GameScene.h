@@ -8,6 +8,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Player.h"
+#include <vector>
 
 
 /// <summary>
@@ -60,8 +61,15 @@ private: // メンバ変数
 	ViewProjection viewProjection_;
 
 
-	// 自キャラ
+	// 自キャラクラス
 	Player* player_ = nullptr;
+
+	// ブロック3Dモデル
+	Model* modelBlock_ = nullptr;
+
+	// ブロックを複数
+	std::vector<WorldTransform*> worldTransformBlocks_;
+
 
 
 };
