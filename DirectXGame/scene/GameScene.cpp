@@ -12,6 +12,7 @@ GameScene::~GameScene() {
 	// 自キャラの解放
 	delete player_;
 
+
 	// ブロックの解放
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -21,6 +22,12 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 	delete debugCamera_;
+
+	// スカイドームの解放
+	delete skydome_;
+
+	delete modelSkydome_;
+
 
 }
 
@@ -80,6 +87,16 @@ void GameScene::Initialize() {
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
+	// 3Dモデルの生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
+	// スカイドームの生成
+	skydome_ = new Skydome();
+	// スカイドームの初期化
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
+
+
+
 }
 
 void GameScene::Update() {
@@ -87,6 +104,8 @@ void GameScene::Update() {
 	// 自キャラの更新
 	player_->Update();
 
+	// スカイドームの更新
+	skydome_->Update();
 
 	// ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -184,7 +203,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	// 自キャラの描画
-	//player_->Draw();
+	player_->Draw();
 
 	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -195,6 +214,8 @@ void GameScene::Draw() {
 		}
 	}
 
+	// スカイドームの描画
+	skydome_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

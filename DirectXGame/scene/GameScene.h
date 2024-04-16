@@ -10,6 +10,7 @@
 #include "Player.h"
 #include <vector>
 #include "MathUtilityForText.h"
+#include "Skydome.h"
 
 #include "DebugCamera.h"
 
@@ -72,11 +73,7 @@ private: // メンバ変数
 
 	// ブロックを複数
 	//std::vector<WorldTransform*> worldTransformBlocks_;
-
-
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
-
-
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
@@ -84,6 +81,11 @@ private: // メンバ変数
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
+	// スカイドームクラス
+	Skydome* skydome_ = nullptr;
+
+	// 3Dモデル
+	Model* modelSkydome_ = nullptr;
 
 
 
