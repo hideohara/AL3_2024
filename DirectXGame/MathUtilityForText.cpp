@@ -14,7 +14,9 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vecto
 	Vector3 rot2 = rot;
 
 	// 平行移動行列の作成
-	Matrix4x4 matTrans = MakeTranslateMatrix(translate);
+	//Matrix4x4 matTrans = MakeTranslateMatrix(translate);
+	Matrix4x4 matTrans{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,        1.0f,        0.0f,        0.0f,
+				 0.0f, 0.0f, 1.0f, 0.0f, translate.x, translate.y, translate.z, 1.0f };
 
 	// とりあえず平行移動行列だけ返す
 	return matTrans;

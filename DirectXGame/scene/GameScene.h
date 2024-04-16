@@ -11,6 +11,9 @@
 #include <vector>
 #include "MathUtilityForText.h"
 
+#include "DebugCamera.h"
+
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -68,7 +71,20 @@ private: // メンバ変数
 	Model* modelBlock_ = nullptr;
 
 	// ブロックを複数
-	std::vector<WorldTransform*> worldTransformBlocks_;
+	//std::vector<WorldTransform*> worldTransformBlocks_;
+
+
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+
+
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
+	// デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
+
+
 
 
 
