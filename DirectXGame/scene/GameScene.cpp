@@ -131,6 +131,7 @@ void GameScene::Update() {
 			// 定数バッファに転送する
 			//worldTransformBlock->TransferMatrix();
 
+			//worldTransformBlock->rotation_.y += 0.01f;
 			worldTransformBlock->UpdateMatrix();
 		}
 	}
