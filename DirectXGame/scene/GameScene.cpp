@@ -46,7 +46,9 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("test.png");
 
 	// 3Dモデルの生成
-	model_ = Model::Create();
+	//model_ = Model::Create();
+	model_ = Model::CreateFromOBJ("player");
+	//model_ = Model::CreateFromOBJ("cube");
 
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -55,7 +57,9 @@ void GameScene::Initialize() {
 	// 自キャラの生成
 	player_ = new Player();
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_, &viewProjection_);
+	Vector3 position = mapChipField_->GetMapChipPositionByIndex(2, 18);
+	player_->Initialize(model_, textureHandle_, &viewProjection_, position);
+
 
 	// ブロックの3Dモデルの生成
 	modelBlock_ = Model::CreateFromOBJ("block");

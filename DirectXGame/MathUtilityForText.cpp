@@ -1,4 +1,6 @@
 #include "MathUtilityForText.h"
+#include <cmath>
+#include <numbers>
 
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate) {
 	Matrix4x4 result{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,        1.0f,        0.0f,        0.0f,
@@ -148,4 +150,20 @@ Matrix4x4 MatrixMultiply(Matrix4x4& m1, Matrix4x4& m2) {
 		m1.m[3][3] * m2.m[3][3];
 	return result;
 }
+
+// Vector3の足算
+Vector3& operator+=(Vector3& lhv, const Vector3& rhv) {
+	lhv.x += rhv.x;
+	lhv.y += rhv.y;
+	lhv.z += rhv.z;
+	return lhv;
+}
+
+float EaseInOut(float x1, float x2, float t) {
+	float easedT = -(std::cosf(std::numbers::pi_v<float> *t) - 1.0f) / 2.0f;
+
+	return Lerp(x1, x2, easedT);
+}
+
+float Lerp(float x1, float x2, float t) { return (1.0f - t) * x1 + t * x2; }
 
