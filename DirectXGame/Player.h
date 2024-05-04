@@ -5,11 +5,34 @@
 #include "MathUtilityForText.h"
 #include "Input.h"
 
+// 前方参照
+class MapChipField;
+
 // プレイヤー
 class Player
 {
 
 public:
+    // 左右
+    enum class LRDirection {
+        kRight,
+        kLeft,
+    };
+
+
+    // 角
+    enum Corner {
+        kRightBottom,    // 右下
+        kLeftBottom,     // 左下
+        kRightTop,       // 右上
+        kLeftTop,        // 左上
+
+        kNumCorner       // 要素数
+
+    };
+
+
+
 
     /// <summary>
     /// 
@@ -32,7 +55,8 @@ public:
     const WorldTransform& GetWorldTransform() const { return worldTransform_; }
     const Vector3& GetVelocity() const { return velocity_; }
 
-    void InputMove();
+
+    void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
 private:
     static inline const float kAcceleration = 0.01f;
@@ -47,7 +71,17 @@ private:
     static inline const float kJumpAcceleration = 0.5f;
 
     static inline const float kAttenuationLanding = 0.0f;
+    static inline const float kBlank = 0.04f;
 
+
+
+    // マップとの当たり判定情報
+    struct CollisionMapInfo {
+        bool ceiling = false; // 天井衝突フラグ
+        bool landing = false; // 着地フラグ
+        bool hitWall = false; // 壁接触フラグ
+        Vector3 move;         // 移動量
+    };
 
     // ワールド変換データ
     WorldTransform worldTransform_;
@@ -61,11 +95,7 @@ private:
 
     Vector3 velocity_ = {};
 
-    // 左右
-    enum class LRDirection {
-        kRight,
-        kLeft,
-    };
+
 
 
     LRDirection lrDirection_ = LRDirection::kRight;
@@ -75,6 +105,21 @@ private:
 
     // 接地状態フラグ
     bool onGround_ = true;
+
+    // マップチップによるフィールド
+    MapChipField* mapChipField_ = nullptr;
+
+
+    // キャラクターの当たり判定サイズ
+    static inline const float kWidth = 0.8f;
+    static inline const float kHeight = 0.8f;
+
+    // 移動関数
+    void InputMove();
+    void CheckMapCollision(CollisionMapInfo& info);
+    void CheckMapCollisionUp(CollisionMapInfo& info);
+
+    Vector3 CornerPosition(const Vector3& center, Corner corner);
 
 };
 

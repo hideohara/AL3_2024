@@ -93,6 +93,7 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = { 10.0f, 100 - 12.0f, 6.0f, 6.0f };
 	cameraController_->SetMovableArea(cameraArea);
 
+	player_->SetMapChipField(mapChipField_);
 }
 
 void GameScene::Update() {

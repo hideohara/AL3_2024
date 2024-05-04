@@ -2,6 +2,8 @@
 
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+
+// 前方参照
 class Player;
 
 class CameraController
@@ -34,6 +36,9 @@ public:
     const ViewProjection& GetViewProjection() const { return viewProjection_; }
     void SetMovableArea(Rect area) { movableArea_ = area; }
 
+
+
+
 private:
     // ビュープロジェクション
     //ViewProjection* viewProjection_ = nullptr;
@@ -56,6 +61,9 @@ private:
     Rect movableArea_ = { 0, 100, 0, 100 };
 
     static inline const Rect targetMargin = { -9.0f, 9.0f, -5.0f, 5.0f };
+
+
+
 
 };
 
