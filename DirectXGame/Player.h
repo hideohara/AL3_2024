@@ -60,7 +60,7 @@ public:
 
 private:
     static inline const float kAcceleration = 0.01f;
-    static inline const float kAttenuation = 0.05f;
+    static inline const float kAttenuation = 0.1f;
     static inline const float kTimeTurn = 0.3f;
 
     // 重力加速度（下方向）
@@ -72,7 +72,8 @@ private:
 
     static inline const float kAttenuationLanding = 0.0f;
     static inline const float kBlank = 0.04f;
-
+    static inline const float kGroundSearchHeight = 0.06f;
+    static inline const float kAttenuationWall = 1.0f;
 
 
     // マップとの当たり判定情報
@@ -118,7 +119,10 @@ private:
     void InputMove();
     void CheckMapCollision(CollisionMapInfo& info);
     void CheckMapCollisionUp(CollisionMapInfo& info);
-
+    void CheckMapCollisionDown(CollisionMapInfo& info);
+    void CheckMapCollisionRight(CollisionMapInfo& info);
+    void CheckMapCollisionLeft(CollisionMapInfo& info);
+    void UpdateOnGround(CollisionMapInfo& info);
     Vector3 CornerPosition(const Vector3& center, Corner corner);
 
 };
