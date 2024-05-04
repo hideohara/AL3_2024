@@ -32,17 +32,19 @@ public:
     const WorldTransform& GetWorldTransform() const { return worldTransform_; }
     const Vector3& GetVelocity() const { return velocity_; }
 
+    void InputMove();
+
 private:
     static inline const float kAcceleration = 0.01f;
     static inline const float kAttenuation = 0.05f;
     static inline const float kTimeTurn = 0.3f;
 
     // 重力加速度（下方向）
-    static inline const float kGravityAcceleration = 0.1f;
+    static inline const float kGravityAcceleration = 0.03f;
     // 最大落下速度（下方向）
     static inline const float kLimitFallSpeed = 0.5f;
     // ジャンプ初速（上方向）
-    static inline const float kJumpAcceleration = 1.0f;
+    static inline const float kJumpAcceleration = 0.5f;
 
     static inline const float kAttenuationLanding = 0.0f;
 
