@@ -29,6 +29,8 @@ public:
     /// </summary>
     void Draw();
 
+    const WorldTransform& GetWorldTransform() const { return worldTransform_; }
+    const Vector3& GetVelocity() const { return velocity_; }
 
 private:
     static inline const float kAcceleration = 0.01f;

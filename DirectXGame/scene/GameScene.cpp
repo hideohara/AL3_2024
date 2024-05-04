@@ -32,7 +32,7 @@ GameScene::~GameScene() {
 	// マップチップフィールドの解放
 	delete mapChipField_;
 
-
+	delete cameraController_;
 
 }
 
@@ -85,10 +85,19 @@ void GameScene::Initialize() {
 
 	GenerateBlocks();
 
+	cameraController_ = new CameraController();
+	cameraController_->Initialize();
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
+
+	CameraController::Rect cameraArea = { 10.0f, 100 - 12.0f, 6.0f, 6.0f };
+	cameraController_->SetMovableArea(cameraArea);
 
 }
 
 void GameScene::Update() {
+
+	cameraController_->Update();
 
 	// 自キャラの更新
 	player_->Update();
@@ -159,7 +168,12 @@ void GameScene::Update() {
 	}
 	else {
 		// ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
+		//viewProjection_.UpdateMatrix();
+
+		viewProjection_.matView = cameraController_->GetViewProjection().matView;
+		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
+		// ビュープロジェクションの転送
+		viewProjection_.TransferMatrix();
 	}
 
 

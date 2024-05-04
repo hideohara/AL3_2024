@@ -11,10 +11,9 @@
 #include <vector>
 #include "MathUtilityForText.h"
 #include "Skydome.h"
-
 #include "DebugCamera.h"
-
 #include "MapChipField.h"
+#include "CameraController.h"
 
 /// <summary>
 /// ゲームシーン
@@ -46,6 +45,8 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
+
+	const ViewProjection& GetViewProjection() const { return viewProjection_; }
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -95,7 +96,7 @@ private: // メンバ変数
 
 	void GenerateBlocks();
 
-
+	CameraController* cameraController_;
 
 
 };
