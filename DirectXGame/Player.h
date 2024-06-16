@@ -64,7 +64,7 @@ private:
     static inline const float kTimeTurn = 0.3f;
 
     // 重力加速度（下方向）
-    static inline const float kGravityAcceleration = 0.03f;
+    static inline const float kGravityAcceleration = 0.05f;
     // 最大落下速度（下方向）
     static inline const float kLimitFallSpeed = 0.5f;
     // ジャンプ初速（上方向）
@@ -116,14 +116,25 @@ private:
     static inline const float kHeight = 0.8f;
 
     // 移動関数
+    // ①移動入力
     void InputMove();
+    // ②移動量を加味して衝突判定する
     void CheckMapCollision(CollisionMapInfo& info);
     void CheckMapCollisionUp(CollisionMapInfo& info);
     void CheckMapCollisionDown(CollisionMapInfo& info);
     void CheckMapCollisionRight(CollisionMapInfo& info);
     void CheckMapCollisionLeft(CollisionMapInfo& info);
+    // ③判定結果を反映して移動させる
+    void CheckMapMove(const CollisionMapInfo& info);
+    // ④天井に接触している場合の処理
+    void CheckCeiling(const CollisionMapInfo& info);
+    // ⑤壁に接触している場合の処理
+    void CheckWall(const CollisionMapInfo& info);
+    // ⑥接地状態の切り替え処理
     void UpdateOnGround(CollisionMapInfo& info);
     Vector3 CornerPosition(const Vector3& center, Corner corner);
 
+    // ⑦旋回制御
+    void Round();
 };
 

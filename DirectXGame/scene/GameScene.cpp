@@ -54,11 +54,6 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 
-	// 自キャラの生成
-	player_ = new Player();
-	// 自キャラの初期化
-	Vector3 position = mapChipField_->GetMapChipPositionByIndex(2, 18);
-	player_->Initialize(model_, textureHandle_, &viewProjection_, position);
 
 
 	// ブロックの3Dモデルの生成
@@ -80,10 +75,14 @@ void GameScene::Initialize() {
 
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
-
-
-
 	GenerateBlocks();
+
+	// 自キャラの生成
+	player_ = new Player();
+	// 自キャラの初期化
+	Vector3 position = mapChipField_->GetMapChipPositionByIndex(4, 17);
+	player_->Initialize(model_, textureHandle_, &viewProjection_, position);
+
 
 	cameraController_ = new CameraController();
 	cameraController_->Initialize();

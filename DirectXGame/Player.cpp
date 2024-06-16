@@ -34,77 +34,29 @@ void Player::Update()
 	// ①移動入力
 	InputMove();
 
+	// ②移動量を加味して衝突判定する
 	// 衝突情報を初期化
 	CollisionMapInfo collisionMapInfo;
 	// 移動量に速度の値をコピー
 	collisionMapInfo.move = velocity_;
-
-	// マップ衝突チェック
 	CheckMapCollision(collisionMapInfo);
 
 	//③判定結果を反映して移動させる
-	// 移動
-	worldTransform_.translation_ += collisionMapInfo.move;
+	CheckMapMove(collisionMapInfo);
 
+	// ④天井に接触している場合の処理
+	CheckCeiling(collisionMapInfo);
 
-	// 天井に当たった？
-	if (collisionMapInfo.ceiling) {
-		velocity_.y = 0;
-	}
+	// ⑤壁に接触している場合の処理
+	CheckWall(collisionMapInfo);
 
-
-
-	// 壁接触による減速
-	if (collisionMapInfo.hitWall) {
-		velocity_.x *= (1.0f - kAttenuationWall);
-	}
-
+	// ⑥接地状態の切り替え処理
 	UpdateOnGround(collisionMapInfo);
 
+	// ⑦旋回制御
+	Round();
 
-	/*
-	// 着地フラグ
-	bool landing = false;
-
-	// 地面との当たり判定
-	// 下降中？
-	if (velocity_.y < 0) {
-		// Y座標が地面以下になったら着地
-		if (worldTransform_.translation_.y <= 1.0f) {
-			landing = true;
-		}
-	}
-
-
-
-	// 接地判定
-	if (onGround_) {
-		// ジャンプ開始
-		if (velocity_.y > 0.0f) {
-			// 空中状態に移行
-			onGround_ = false;
-		}
-	}
-	else {
-		// 着地
-		if (landing) {
-			// めり込み排斥
-			worldTransform_.translation_.y = 1.0f;
-			// 摩擦で横方向速度が減衰する
-			velocity_.x *= (1.0f - kAttenuationLanding);
-			// 下方向速度をリセット
-			velocity_.y = 0.0f;
-			// 接地状態に移行
-			onGround_ = true;
-		}
-	}
-	*/
-
-
-	// 移動
-	//worldTransform_.translation_ += velocity_;
-
-	// 行列を更新
+	// ⑧行列計算
 	worldTransform_.UpdateMatrix();
 
 
@@ -117,6 +69,7 @@ void Player::Draw()
 	model_->Draw(worldTransform_, *viewProjection_);
 }
 
+// ①移動入力
 void Player::InputMove()
 {
 	if (onGround_) {
@@ -165,26 +118,6 @@ void Player::InputMove()
 			velocity_.x *= (1.0f - kAttenuation);
 		}
 
-		// 旋回制御
-		if (turnTimer_ > 0.0f)
-		{
-			//旋回タイマーを1 / 60秒分カウントダウンする
-			turnTimer_ -= 1.0f / 60.0f;
-			//turnTimer_ = std::max(turnTimer_ - (1.0f / 60.0f), 0.0f);
-
-				// 左右の自キャラ角度テーブル
-			float destinationRotationYTable[] = {
-				std::numbers::pi_v<float> / 2.0f,
-				std::numbers::pi_v<float> *3.0f / 2.0f
-			};
-			// 状態に応じた目標角度を取得する
-			float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
-			// 自キャラの角度を設定する
-			// 旋回タイマーを使って角度補間;
-			worldTransform_.rotation_.y = EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
-
-		}
-
 		if (Input::GetInstance()->PushKey(DIK_UP)) {
 			// ジャンプ初速
 			velocity_ += Vector3(0, kJumpAcceleration, 0);
@@ -201,6 +134,7 @@ void Player::InputMove()
 
 }
 
+// ②移動量を加味して衝突判定する
 void Player::CheckMapCollision(CollisionMapInfo& info)
 {
 	CheckMapCollisionUp(info);
@@ -209,6 +143,7 @@ void Player::CheckMapCollision(CollisionMapInfo& info)
 	CheckMapCollisionLeft(info);
 }
 
+// 移動量を加味して衝突判定する　上
 void Player::CheckMapCollisionUp(CollisionMapInfo& info)
 {
 	// 上昇あり？
@@ -256,13 +191,13 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info)
 
 }
 
+// 移動量を加味して衝突判定する　下
 void Player::CheckMapCollisionDown(CollisionMapInfo& info)
 {
 	// 下降あり？
 	if (info.move.y >= 0) {
 		return;
 	}
-
 
 	// 移動後の4つの角の座標
 	std::array<Vector3, kNumCorner> positionsNew;
@@ -300,11 +235,9 @@ void Player::CheckMapCollisionDown(CollisionMapInfo& info)
 		// 地面に当たったことを記録する
 		info.landing = true;
 	}
-
-
 }
 
-
+// 移動量を加味して衝突判定する　右
 void Player::CheckMapCollisionRight(CollisionMapInfo& info)
 {
 	// 移動あり？
@@ -336,35 +269,6 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info)
 		hit = true;
 	}
 
-	//// ブロックにヒット？
-	//if (hit) {
-	//	// めり込みを排除する方向に移動量を設定する
-	//	indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(+kHeight / 2.0f, 0, 0));
-	//	// めり込み先ブロックの範囲矩形
-	//	MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-	//	//info.move.x = (std::max)(rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank), 0.0f);
-	//	//info.move.x = (std::max)(0.0f, rect.bottom - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
-	//	info.move.x = std::max(rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank), 0.0f);
-
-	//	// 壁に当たったことを記録する
-	//	info.hitWall = true;
-	//}
-
-		// ブロックにヒット？
-	//if (hit) {
-	//	// 現在座標が壁の外か判定
-	//	MapChipField::IndexSet indexSetNow;
-	//	indexSetNow = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(+kWidth / 2.0f, 0, 0));
-	//	if (indexSetNow.xIndex != indexSet.xIndex) {
-	//		// めり込みを排除する方向に移動量を設定する
-	//		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, 0));
-	//		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-	//		info.move.x = std::max(rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank), 0.0f);
-	//		info.hitWall = true;
-	//	}
-	//}
-
-
 	// ブロックにヒット？
 	if (hit) {
 		// めり込みを排除する方向に移動量を設定する
@@ -379,8 +283,7 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info)
 
 }
 
-
-
+// 移動量を加味して衝突判定する　左
 void Player::CheckMapCollisionLeft(CollisionMapInfo& info)
 {
 	// 移動あり？
@@ -425,12 +328,35 @@ void Player::CheckMapCollisionLeft(CollisionMapInfo& info)
 		// 壁に当たったことを記録する
 		info.hitWall = true;
 	}
-
 }
 
+// ③判定結果を反映して移動させる
+void Player::CheckMapMove(const CollisionMapInfo& info)
+{
+	worldTransform_.translation_ += info.move;
+}
+
+// ④天井に接触している場合の処理
+void Player::CheckCeiling(const CollisionMapInfo& info)
+{
+	if (info.ceiling) {
+		// DebugText::GetInstance()->ConsolePrintf("hit ceiling\n");
+		velocity_.y = 0;
+	}
+}
+
+// ⑤壁に接触している場合の処理
+void Player::CheckWall(const CollisionMapInfo& info)
+{
+	// 壁接触による減速
+	if (info.hitWall) {
+		velocity_.x *= (1.0f - kAttenuationWall);
+	}
+}
+
+// ⑥接地状態の切り替え処理
 void Player::UpdateOnGround(CollisionMapInfo& info)
 {
-
 	// 自キャラが接地状態？
 	if (onGround_) {
 
@@ -450,20 +376,20 @@ void Player::UpdateOnGround(CollisionMapInfo& info)
 
 			bool ground = false;
 
-			//MapChipType mapChipType;
-			//// 左下点の判定
-			//MapChipField::IndexSet indexSet;
-			//indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftBottom] + Vector3(0, -kGroundSearchHeight, 0));
-			//mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-			//if (mapChipType == MapChipType::kBlock) {
-			//	ground = true;
-			//}
-			//// 右下点の判定
-			//indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom] + Vector3(0, -kGroundSearchHeight, 0));
-			//mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
-			//if (mapChipType == MapChipType::kBlock) {
-			//	ground = true;
-			//}
+			MapChipType mapChipType;
+			// 左下点の判定
+			MapChipField::IndexSet indexSet;
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftBottom] + Vector3(0, -kGroundSearchHeight, 0));
+			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+			if (mapChipType == MapChipType::kBlock) {
+				ground = true;
+			}
+			// 右下点の判定
+			indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom] + Vector3(0, -kGroundSearchHeight, 0));
+			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+			if (mapChipType == MapChipType::kBlock) {
+				ground = true;
+			}
 
 			// 落下開始
 			if (!ground) {
@@ -485,10 +411,7 @@ void Player::UpdateOnGround(CollisionMapInfo& info)
 			// Y速度をゼロにする
 			velocity_.y = 0.0f;
 		}
-
 	}
-
-
 }
 
 Vector3 Player::CornerPosition(const Vector3& center, Corner corner)
@@ -501,6 +424,27 @@ Vector3 Player::CornerPosition(const Vector3& center, Corner corner)
 	};
 
 	return center + offsetTable[static_cast<uint32_t>(corner)];
+}
 
+// ⑦旋回制御
+void Player::Round()
+{
+	// 旋回制御
+	if (turnTimer_ > 0.0f)
+	{
+		//旋回タイマーを1 / 60秒分カウントダウンする
+		turnTimer_ -= 1.0f / 60.0f;
+		//turnTimer_ = std::max(turnTimer_ - (1.0f / 60.0f), 0.0f);
 
+		// 左右の自キャラ角度テーブル
+		float destinationRotationYTable[] = {
+			std::numbers::pi_v<float> / 2.0f,
+			std::numbers::pi_v<float> *3.0f / 2.0f
+		};
+		// 状態に応じた目標角度を取得する
+		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+		// 自キャラの角度を設定する
+		// 旋回タイマーを使って角度補間;
+		worldTransform_.rotation_.y = EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
+	}
 }

@@ -53,9 +53,9 @@ public:
     uint32_t GetNumBlockVirtical() const { return kNumBlockVirtical; }
     uint32_t GetNumBlockHorizontal() const { return kNumBlockHorizontal; }
 
-
+    // 座標からマップチップ番号を計算
     IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
-
+    // ブロックの範囲取得関数
     Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
 
 private:

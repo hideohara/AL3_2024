@@ -93,7 +93,7 @@ Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex
     return Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0);
 }
 
-
+// 座標からマップチップ番号を計算
 MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position)
 {
     IndexSet indexSet = {};
@@ -102,6 +102,7 @@ MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3&
     return indexSet;
 }
 
+// ブロックの範囲取得関数
 MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t yIndex)
 {
 
